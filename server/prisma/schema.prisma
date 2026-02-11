@@ -8,7 +8,7 @@ datasource db {
 }
 
 // ============================================
-// 管理员
+// Admin
 // ============================================
 model Admin {
   id           Int       @id @default(autoincrement())
@@ -53,7 +53,7 @@ model ApiKey {
 }
 
 // ============================================
-// 邮箱账户
+// Email Account
 // ============================================
 model EmailAccount {
   id           Int         @id @default(autoincrement())
@@ -74,7 +74,7 @@ model EmailAccount {
 }
 
 // ============================================
-// 邮箱使用记录（邮箱池）
+// Email Usage Record (Email Pool)
 // ============================================
 model EmailUsage {
   id             Int      @id @default(autoincrement())
@@ -90,7 +90,7 @@ model EmailUsage {
 }
 
 // ============================================
-// API 调用日志
+// API Call Log
 // ============================================
 model ApiLog {
   id             BigInt    @id @default(autoincrement())
@@ -113,7 +113,7 @@ model ApiLog {
 }
 
 // ============================================
-// 枚举
+// Enums
 // ============================================
 enum Role {
   SUPER_ADMIN

@@ -28,7 +28,7 @@ interface EmailMessage {
 
 export const mailService = {
     /**
-     * 解析凭证
+     * Resolve credentials
      */
     async resolveCredentials(
         input: MailRequestInput,
@@ -36,7 +36,7 @@ export const mailService = {
     ): Promise<Credentials> {
         const { email, auto } = input;
 
-        // 自动分配模式
+        // Auto assignment mode
         if (!email && auto) {
             if (!apiKeyId) {
                 throw new AppError('AUTH_REQUIRED', 'Auto assignment requires API Key authentication', 400);
@@ -55,12 +55,12 @@ export const mailService = {
             return { ...account, autoAssigned: true };
         }
 
-        // 必须提供邮箱
+        // Must provide email
         if (!email) {
             throw new AppError('EMAIL_REQUIRED', 'Email is required. Set auto=true to auto-assign.', 400);
         }
 
-        // 从数据库查询
+        // Query from database
         const account = await emailService.getByEmail(email);
         if (!account) {
             throw new AppError('EMAIL_NOT_FOUND', 'Email account not found', 404);
@@ -70,7 +70,7 @@ export const mailService = {
     },
 
     /**
-     * 更新邮箱状态
+     * Update email status
      */
     async updateEmailStatus(emailId: number, success: boolean, errorMessage?: string) {
         await emailService.updateStatus(
@@ -81,7 +81,7 @@ export const mailService = {
     },
 
     /**
-     * 记录 API 调用
+     * Log API call
      */
     async logApiCall(
         action: string,
@@ -108,7 +108,7 @@ export const mailService = {
     },
 
     /**
-     * 获取 Microsoft Graph API Access Token
+     * Get Microsoft Graph API Access Token
      */
     async getGraphAccessToken(
         credentials: Credentials,
@@ -116,7 +116,7 @@ export const mailService = {
     ): Promise<{ accessToken: string; hasMailRead: boolean } | null> {
         const cacheKey = `graph_api_access_token_${credentials.email}`;
 
-        // 尝试从缓存获取（缓存的 token 一定有 Mail.Read 权限）
+        // Try to get from cache (cached token always has Mail.Read permission)
         const cachedToken = await getCache(cacheKey);
         if (cachedToken) {
             logger.debug({ email: credentials.email }, 'Using cached Graph API token');
@@ -149,11 +149,11 @@ export const mailService = {
 
             const data: any = await response.json();
 
-            // 检查是否有邮件读取权限
+            // Check if has mail read permission
             const hasMailRead = data.scope && data.scope.includes('https://graph.microsoft.com/Mail.Read');
 
             if (hasMailRead) {
-                // 只有有 Mail.Read 权限时才缓存
+                // Only cache when has Mail.Read permission
                 const expireTime = (data.expires_in || 3600) - 60;
                 await setCache(cacheKey, data.access_token, expireTime);
             } else {
@@ -168,7 +168,7 @@ export const mailService = {
     },
 
     /**
-     * 使用 Graph API 获取邮件
+     * Get emails via Graph API
      */
     async getEmailsViaGraphApi(
         accessToken: string,
@@ -176,7 +176,7 @@ export const mailService = {
         limit: number = 100,
         proxyConfig?: { socks5?: string; http?: string }
     ): Promise<EmailMessage[]> {
-        // 转换邮箱名称
+        // Convert mailbox name
         let folder = 'inbox';
         if (mailbox?.toLowerCase() === 'junk') {
             folder = 'junkemail';
@@ -220,7 +220,7 @@ export const mailService = {
     },
 
     /**
-     * 获取 IMAP Access Token (不带 scope)
+     * Get IMAP Access Token (without scope)
      */
     async getImapAccessToken(
         credentials: Credentials,
@@ -246,7 +246,7 @@ export const mailService = {
                         client_id: credentials.clientId,
                         grant_type: 'refresh_token',
                         refresh_token: credentials.refreshToken,
-                        // 注意：IMAP 不需要 scope
+                        // Note: IMAP doesn't need scope
                     }).toString(),
                 },
                 proxyConfig
@@ -271,7 +271,7 @@ export const mailService = {
     },
 
     /**
-     * 生成 IMAP XOAUTH2 认证字符串
+     * Generate IMAP XOAUTH2 authentication string
      */
     generateAuthString(email: string, accessToken: string): string {
         const authString = `user=${email}\x01auth=Bearer ${accessToken}\x01\x01`;
@@ -279,7 +279,7 @@ export const mailService = {
     },
 
     /**
-     * 使用 IMAP 获取邮件
+     * Get emails via IMAP
      */
     async getEmailsViaImap(
         email: string,
@@ -323,7 +323,7 @@ export const mailService = {
                             return resolve([]);
                         }
 
-                        // 限制返回数量
+                        // Limit return count
                         const limitedResults = results.slice(-limit);
                         messageCount = limitedResults.length;
 
@@ -361,7 +361,7 @@ export const mailService = {
                         });
 
                         f.once('end', () => {
-                            // 如果没有消息，直接结束
+                            // If no messages, end directly
                             if (messageCount === 0) {
                                 imap.end();
                             }
@@ -388,7 +388,7 @@ export const mailService = {
     },
 
     /**
-     * 获取邮件（主入口）- 支持 Graph API 和 IMAP 回退
+     * Get emails (main entry) - supports Graph API with IMAP fallback
      */
     async getEmails(
         credentials: Credentials,
@@ -396,11 +396,11 @@ export const mailService = {
     ) {
         const proxyConfig = { socks5: options.socks5, http: options.http };
 
-        // 1. 尝试 Graph API
+        // 1. Try Graph API
         const tokenResult = await this.getGraphAccessToken(credentials, proxyConfig);
 
         if (tokenResult && tokenResult.hasMailRead) {
-            // Graph API 有权限，使用 Graph API
+            // Graph API has permission, use Graph API
             logger.info({ email: credentials.email }, 'Using Graph API for email retrieval');
             try {
                 const messages = await this.getEmailsViaGraphApi(
@@ -422,7 +422,7 @@ export const mailService = {
             }
         }
 
-        // 2. 回退到 IMAP
+        // 2. Fallback to IMAP
         logger.info({ email: credentials.email }, 'Using IMAP fallback for email retrieval');
         const imapToken = await this.getImapAccessToken(credentials, proxyConfig);
 
@@ -448,7 +448,7 @@ export const mailService = {
     },
 
     /**
-     * 清空邮箱（通过 Graph API 删除所有邮件）
+     * Clear mailbox (delete all emails via Graph API)
      */
     async processMailbox(
         credentials: Credentials,
@@ -463,17 +463,17 @@ export const mailService = {
             throw new AppError('GRAPH_API_FAILED', 'Failed to get access token', 500);
         }
 
-        // 1. 获取所有邮件 ID
+        // 1. Get all email IDs
         let page = 0;
         let deletedCount = 0;
         let hasMore = true;
 
         try {
-            while (hasMore && page < 10) { // 限制最大页数防止超时
+            while (hasMore && page < 10) { // Limit max pages to prevent timeout
                 const messages = await this.getEmailsViaGraphApi(
                     tokenResult.accessToken,
                     options.mailbox,
-                    500, // 每次取 500
+                    500, // Get 500 each time
                     proxyConfig
                 );
 
@@ -482,8 +482,8 @@ export const mailService = {
                     break;
                 }
 
-                // 2. 批量删除（Graph API 不支持批量删除，只能并发逐个删除）
-                // 限制并发数为 10
+                // 2. Batch delete (Graph API doesn't support batch delete, can only delete one by one concurrently)
+                // Limit concurrency to 10
                 const batchSize = 10;
                 for (let i = 0; i < messages.length; i += batchSize) {
                     const chunk = messages.slice(i, i + batchSize);
@@ -517,7 +517,7 @@ export const mailService = {
     },
 
     /**
-     * 单个删除邮件
+     * Delete single email
      */
     async deleteMessageViaGraphApi(
         accessToken: string,
@@ -536,7 +536,7 @@ export const mailService = {
                 proxyConfig
             );
         } catch (err) {
-            // 忽略删除错误，继续下一个
+            // Ignore delete errors, continue to next
             logger.warn({ messageId }, 'Failed to delete message');
         }
     },

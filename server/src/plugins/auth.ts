@@ -21,7 +21,7 @@ declare module 'fastify' {
 }
 
 /**
- * 提取 Token（从 Header 或 Cookie）
+ * Extract Token (from Header or Cookie)
  */
 function extractToken(request: FastifyRequest): string | null {
     // Authorization header
@@ -40,7 +40,7 @@ function extractToken(request: FastifyRequest): string | null {
 }
 
 /**
- * 提取 API Key
+ * Extract API Key
  */
 function extractApiKey(request: FastifyRequest): string | null {
     // X-API-Key header
@@ -66,7 +66,7 @@ function extractApiKey(request: FastifyRequest): string | null {
 
 const authPlugin: FastifyPluginAsync = async (fastify) => {
     /**
-     * JWT 认证 (管理后台)
+     * JWT Authentication (Admin panel)
      */
     fastify.decorate('authenticateJwt', async (request: FastifyRequest, reply: FastifyReply) => {
         const token = extractToken(request);
@@ -88,7 +88,7 @@ const authPlugin: FastifyPluginAsync = async (fastify) => {
     });
 
     /**
-     * API Key 认证 (外部 API)
+     * API Key Authentication (External API)
      */
     fastify.decorate('authenticateApiKey', async (request: FastifyRequest, reply: FastifyReply) => {
         const key = extractApiKey(request);
@@ -121,7 +121,7 @@ const authPlugin: FastifyPluginAsync = async (fastify) => {
             throw new AppError('API_KEY_EXPIRED', 'API Key has expired', 403);
         }
 
-        // 更新使用统计
+        // Update usage statistics
         await prisma.apiKey.update({
             where: { id: apiKey.id },
             data: {
@@ -138,7 +138,7 @@ const authPlugin: FastifyPluginAsync = async (fastify) => {
     });
 
     /**
-     * 超级管理员权限检查
+     * Super admin permission check
      */
     fastify.decorate('requireSuperAdmin', async (request: FastifyRequest, reply: FastifyReply) => {
         if (!request.user) {

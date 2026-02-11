@@ -91,7 +91,7 @@ const ApiKeysPage: React.FC = () => {
                 setTotal(res.data.total);
             }
         } catch (err) {
-            message.error('获取数据失败');
+            message.error('Failed to fetch data');
         } finally {
             setLoading(false);
         }
@@ -118,13 +118,13 @@ const ApiKeysPage: React.FC = () => {
         try {
             const res: any = await apiKeyApi.delete(id);
             if (res.code === 200) {
-                message.success('删除成功');
+                message.success('Deleted successfully');
                 fetchData();
             } else {
                 message.error(res.message);
             }
         } catch (err: any) {
-            message.error(err.message || '删除失败');
+            message.error(err.message || 'Delete failed');
         }
     };
 
@@ -139,7 +139,7 @@ const ApiKeysPage: React.FC = () => {
             if (editingId) {
                 const res: any = await apiKeyApi.update(editingId, submitData);
                 if (res.code === 200) {
-                    message.success('更新成功');
+                    message.success('Updated successfully');
                     setModalVisible(false);
                     fetchData();
                 } else {
@@ -173,7 +173,7 @@ const ApiKeysPage: React.FC = () => {
                 setPoolStats(res.data);
             }
         } catch (err) {
-            message.error('获取邮箱池数据失败');
+            message.error('Failed to get pool data');
         } finally {
             setPoolLoading(false);
         }
@@ -184,21 +184,21 @@ const ApiKeysPage: React.FC = () => {
         try {
             const res: any = await apiKeyApi.resetPool(currentApiKey.id);
             if (res.code === 200) {
-                message.success('邮箱池已重置');
-                // 刷新统计
+                message.success('Email pool has been reset');
+                // Refresh statistics
                 const statsRes: any = await apiKeyApi.getUsage(currentApiKey.id);
                 if (statsRes.code === 200) {
                     setPoolStats(statsRes.data);
                 }
             } else {
-                message.error(res.message || '重置失败');
+                message.error(res.message || 'Reset failed');
             }
         } catch (err) {
-            message.error('重置失败');
+            message.error('Reset failed');
         }
     };
 
-    // 打开邮箱管理弹窗
+    // Open email management modal
     const handleManageEmails = async (record: ApiKey) => {
         setCurrentApiKey(record);
         setEmailModalVisible(true);
@@ -210,31 +210,31 @@ const ApiKeysPage: React.FC = () => {
                 setSelectedEmails(res.data.filter((e: any) => e.used).map((e: any) => e.id));
             }
         } catch (err) {
-            message.error('获取邮箱列表失败');
+            message.error('Failed to get email list');
         } finally {
             setEmailLoading(false);
         }
     };
 
-    // 保存邮箱选择
+    // Save email selection
     const handleSaveEmails = async () => {
         if (!currentApiKey) return;
         setSavingEmails(true);
         try {
             const res: any = await apiKeyApi.updatePoolEmails(currentApiKey.id, selectedEmails);
             if (res.code === 200) {
-                message.success(`已保存，共 ${res.data.count} 个邮箱`);
+                message.success(`Saved, total ${res.data.count} emails`);
                 setEmailModalVisible(false);
-                // 刷新统计
+                // Refresh statistics
                 const statsRes: any = await apiKeyApi.getUsage(currentApiKey.id);
                 if (statsRes.code === 200) {
                     setPoolStats(statsRes.data);
                 }
             } else {
-                message.error(res.message || '保存失败');
+                message.error(res.message || 'Save failed');
             }
         } catch (err) {
-            message.error('保存失败');
+            message.error('Save failed');
         } finally {
             setSavingEmails(false);
         }
@@ -242,7 +242,7 @@ const ApiKeysPage: React.FC = () => {
 
     const columns: ColumnsType<ApiKey> = [
         {
-            title: '名称',
+            title: 'Name',
             dataIndex: 'name',
             key: 'name',
             render: (name, record) => (
@@ -253,44 +253,44 @@ const ApiKeysPage: React.FC = () => {
             ),
         },
         {
-            title: 'Key 前缀',
+            title: 'Key Prefix',
             dataIndex: 'keyPrefix',
             key: 'keyPrefix',
             width: 120,
             render: (text) => <Text code>{text}...</Text>,
         },
         {
-            title: '速率限制',
+            title: 'Rate Limit',
             dataIndex: 'rateLimit',
             key: 'rateLimit',
             width: 100,
-            render: (val) => <Tag color="blue">{val}/分钟</Tag>,
+            render: (val) => <Tag color="blue">{val}/min</Tag>,
         },
         {
-            title: '状态',
+            title: 'Status',
             dataIndex: 'status',
             key: 'status',
             width: 80,
             render: (status) => (
                 <Tag color={status === 'ACTIVE' ? 'green' : 'red'}>
-                    {status === 'ACTIVE' ? '启用' : '禁用'}
+                    {status === 'ACTIVE' ? 'Active' : 'Disabled'}
                 </Tag>
             ),
         },
         {
-            title: '使用次数',
+            title: 'Usage Count',
             dataIndex: 'usageCount',
             key: 'usageCount',
             width: 100,
             render: (val) => <Text type="secondary">{val?.toLocaleString() || 0}</Text>,
         },
         {
-            title: '过期时间',
+            title: 'Expires',
             dataIndex: 'expiresAt',
             key: 'expiresAt',
             width: 120,
             render: (val) => {
-                if (!val) return <Text type="secondary">永不过期</Text>;
+                if (!val) return <Text type="secondary">Never</Text>;
                 const isExpired = dayjs(val).isBefore(dayjs());
                 return (
                     <Text type={isExpired ? 'danger' : undefined}>
@@ -300,42 +300,42 @@ const ApiKeysPage: React.FC = () => {
             },
         },
         {
-            title: '最后使用',
+            title: 'Last Used',
             dataIndex: 'lastUsedAt',
             key: 'lastUsedAt',
             width: 140,
-            render: (val) => val ? dayjs(val).format('MM-DD HH:mm') : <Text type="secondary">从未使用</Text>,
+            render: (val) => val ? dayjs(val).format('MM-DD HH:mm') : <Text type="secondary">Never used</Text>,
         },
         {
-            title: '操作',
+            title: 'Actions',
             key: 'action',
             width: 180,
             render: (_, record) => (
                 <Space size="small">
-                    <Tooltip title="邮箱池">
+                    <Tooltip title="Email Pool">
                         <Button
                             type="text"
                             icon={<DatabaseOutlined />}
                             onClick={() => handleViewPool(record)}
                         />
                     </Tooltip>
-                    <Tooltip title="管理邮箱">
+                    <Tooltip title="Manage Emails">
                         <Button
                             type="text"
                             icon={<ThunderboltOutlined />}
                             onClick={() => handleManageEmails(record)}
                         />
                     </Tooltip>
-                    <Tooltip title="编辑">
+                    <Tooltip title="Edit">
                         <Button
                             type="text"
                             icon={<EditOutlined />}
                             onClick={() => handleEdit(record)}
                         />
                     </Tooltip>
-                    <Tooltip title="删除">
+                    <Tooltip title="Delete">
                         <Popconfirm
-                            title="确定要删除此 API Key 吗？"
+                            title="Are you sure you want to delete this API Key?"
                             onConfirm={() => handleDelete(record.id)}
                         >
                             <Button type="text" danger icon={<DeleteOutlined />} />
@@ -350,14 +350,14 @@ const ApiKeysPage: React.FC = () => {
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
                 <Title level={4} style={{ margin: 0 }}>
-                    API Key 管理
+                    API Key Management
                 </Title>
                 <Space>
                     <Button icon={<ReloadOutlined />} onClick={fetchData}>
-                        刷新
+                        Refresh
                     </Button>
                     <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
-                        创建 API Key
+                        Create API Key
                     </Button>
                 </Space>
             </div>
@@ -373,7 +373,7 @@ const ApiKeysPage: React.FC = () => {
                     total,
                     showSizeChanger: true,
                     showQuickJumper: true,
-                    showTotal: (total) => `共 ${total} 条`,
+                    showTotal: (total) => `Total ${total} items`,
                     onChange: (p, ps) => {
                         setPage(p);
                         setPageSize(ps);
@@ -381,9 +381,9 @@ const ApiKeysPage: React.FC = () => {
                 }}
             />
 
-            {/* 创建/编辑弹窗 */}
+            {/* Create/Edit Modal */}
             <Modal
-                title={editingId ? '编辑 API Key' : '创建 API Key'}
+                title={editingId ? 'Edit API Key' : 'Create API Key'}
                 open={modalVisible}
                 onOk={handleSubmit}
                 onCancel={() => setModalVisible(false)}
@@ -392,62 +392,62 @@ const ApiKeysPage: React.FC = () => {
                 <Form form={form} layout="vertical">
                     <Form.Item
                         name="name"
-                        label="名称"
-                        rules={[{ required: true, message: '请输入名称' }]}
+                        label="Name"
+                        rules={[{ required: true, message: 'Please enter name' }]}
                     >
-                        <Input placeholder="例如：生产环境、测试环境" />
+                        <Input placeholder="e.g., Production, Testing" />
                     </Form.Item>
                     <Form.Item
                         name="rateLimit"
-                        label="速率限制（每分钟请求数）"
+                        label="Rate Limit (requests per minute)"
                         initialValue={60}
                     >
                         <InputNumber min={1} max={10000} style={{ width: '100%' }} />
                     </Form.Item>
                     <Form.Item
                         name="expiresAt"
-                        label="过期时间（可选）"
+                        label="Expiration Date (optional)"
                     >
                         <DatePicker
                             style={{ width: '100%' }}
-                            placeholder="不设置则永不过期"
+                            placeholder="Leave empty for no expiration"
                             disabledDate={(current) => current && current < dayjs().startOf('day')}
                         />
                     </Form.Item>
                     {editingId && (
                         <Form.Item
                             name="status"
-                            label="状态"
+                            label="Status"
                         >
                             <Select>
-                                <Select.Option value="ACTIVE">启用</Select.Option>
-                                <Select.Option value="DISABLED">禁用</Select.Option>
+                                <Select.Option value="ACTIVE">Active</Select.Option>
+                                <Select.Option value="DISABLED">Disabled</Select.Option>
                             </Select>
                         </Form.Item>
                     )}
                 </Form>
             </Modal>
 
-            {/* 新建 Key 显示弹窗 */}
+            {/* New Key Display Modal */}
             <Modal
-                title="API Key 已创建"
+                title="API Key Created"
                 open={newKeyModalVisible}
                 onOk={() => setNewKeyModalVisible(false)}
                 onCancel={() => setNewKeyModalVisible(false)}
                 footer={[
                     <Button key="close" onClick={() => setNewKeyModalVisible(false)}>
-                        关闭
+                        Close
                     </Button>,
                 ]}
             >
                 <Card>
                     <Text type="warning" style={{ display: 'block', marginBottom: 16 }}>
-                        ⚠️ 请立即复制并妥善保存此 API Key，它不会再次显示！
+                        Warning: Please copy and save this API Key immediately, it will not be shown again!
                     </Text>
                     <Paragraph
                         copyable={{
                             text: newKey,
-                            onCopy: () => message.success('已复制'),
+                            onCopy: () => message.success('Copied'),
                         }}
                         code
                         style={{
@@ -462,12 +462,12 @@ const ApiKeysPage: React.FC = () => {
                 </Card>
             </Modal>
 
-            {/* 邮箱池弹窗 */}
+            {/* Email Pool Modal */}
             <Modal
                 title={
                     <Space>
                         <DatabaseOutlined />
-                        <span>邮箱池管理 - {currentApiKey?.name}</span>
+                        <span>Email Pool Management - {currentApiKey?.name}</span>
                     </Space>
                 }
                 open={poolModalVisible}
@@ -476,14 +476,14 @@ const ApiKeysPage: React.FC = () => {
                 width={500}
             >
                 {poolLoading ? (
-                    <div style={{ textAlign: 'center', padding: 40 }}>加载中...</div>
+                    <div style={{ textAlign: 'center', padding: 40 }}>Loading...</div>
                 ) : poolStats ? (
                     <div>
                         <Row gutter={16} style={{ marginBottom: 24 }}>
                             <Col span={8}>
                                 <div className="stat-blue">
                                     <Statistic
-                                        title="总邮箱数"
+                                        title="Total Emails"
                                         value={poolStats.total}
                                     />
                                 </div>
@@ -491,7 +491,7 @@ const ApiKeysPage: React.FC = () => {
                             <Col span={8}>
                                 <div className="stat-orange">
                                     <Statistic
-                                        title="已使用"
+                                        title="Used"
                                         value={poolStats.used}
                                     />
                                 </div>
@@ -499,7 +499,7 @@ const ApiKeysPage: React.FC = () => {
                             <Col span={8}>
                                 <div className={poolStats.remaining > 0 ? 'stat-green' : 'stat-red'}>
                                     <Statistic
-                                        title="剩余可用"
+                                        title="Remaining"
                                         value={poolStats.remaining}
                                     />
                                 </div>
@@ -514,7 +514,7 @@ const ApiKeysPage: React.FC = () => {
 
                         <div style={{ marginBottom: 24 }}>
                             <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>
-                                使用进度
+                                Usage Progress
                             </Text>
                             <Progress
                                 percent={poolStats.total > 0 ? Math.round((poolStats.used / poolStats.total) * 100) : 0}
@@ -530,11 +530,11 @@ const ApiKeysPage: React.FC = () => {
 
                         <div style={{ textAlign: 'center' }}>
                             <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
-                                重置后，此 API Key 可重新使用所有邮箱
+                                After reset, this API Key can reuse all emails
                             </Text>
                             <Popconfirm
-                                title="确定要重置邮箱池吗？"
-                                description="重置后该 API Key 可重新使用所有邮箱"
+                                title="Are you sure you want to reset the email pool?"
+                                description="After reset, this API Key can reuse all emails"
                                 onConfirm={handleResetPool}
                             >
                                 <Button
@@ -542,31 +542,31 @@ const ApiKeysPage: React.FC = () => {
                                     danger
                                     icon={<ThunderboltOutlined />}
                                 >
-                                    重置邮箱池
+                                    Reset Email Pool
                                 </Button>
                             </Popconfirm>
                         </div>
                     </div>
                 ) : (
                     <div style={{ textAlign: 'center', padding: 40, color: '#999' }}>
-                        暂无数据
+                        No data
                     </div>
                 )}
             </Modal>
 
-            {/* 邮箱管理弹窗 */}
+            {/* Email Management Modal */}
             <Modal
                 title={
                     <Space>
                         <ThunderboltOutlined />
-                        <span>管理邮箱 - {currentApiKey?.name}</span>
+                        <span>Manage Emails - {currentApiKey?.name}</span>
                     </Space>
                 }
                 open={emailModalVisible}
                 onCancel={() => setEmailModalVisible(false)}
                 onOk={handleSaveEmails}
-                okText="保存"
-                cancelText="取消"
+                okText="Save"
+                cancelText="Cancel"
                 confirmLoading={savingEmails}
                 width={600}
             >
@@ -578,7 +578,7 @@ const ApiKeysPage: React.FC = () => {
                     <div>
                         <div style={{ marginBottom: 16 }}>
                             <Text type="secondary">
-                                勾选的邮箱表示该 API Key 已使用过（不会再自动分配）
+                                Checked emails indicate this API Key has used them (will not be auto-allocated again)
                             </Text>
                         </div>
                         <div style={{ marginBottom: 16 }}>
@@ -587,16 +587,16 @@ const ApiKeysPage: React.FC = () => {
                                     size="small"
                                     onClick={() => setSelectedEmails(emailList.map(e => e.id))}
                                 >
-                                    全选
+                                    Select All
                                 </Button>
                                 <Button
                                     size="small"
                                     onClick={() => setSelectedEmails([])}
                                 >
-                                    取消全选
+                                    Deselect All
                                 </Button>
                                 <Text type="secondary">
-                                    已选择 {selectedEmails.length} / {emailList.length}
+                                    Selected {selectedEmails.length} / {emailList.length}
                                 </Text>
                             </Space>
                         </div>

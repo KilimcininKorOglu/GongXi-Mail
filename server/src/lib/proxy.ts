@@ -11,7 +11,7 @@ interface ProxyOptions {
 }
 
 /**
- * 创建 SOCKS5 代理 Agent
+ * Create SOCKS5 proxy Agent
  */
 export function createSocksAgent(socks5: string): SocksProxyAgent | null {
     if (!socks5 || typeof socks5 !== 'string') {
@@ -41,7 +41,7 @@ export function createSocksAgent(socks5: string): SocksProxyAgent | null {
 }
 
 /**
- * 创建 HTTP 代理 Agent
+ * Create HTTP proxy Agent
  */
 export function createHttpAgent(http: string): ProxyAgent | null {
     if (!http) {
@@ -59,10 +59,10 @@ export function createHttpAgent(http: string): ProxyAgent | null {
 }
 
 /**
- * 自动选择代理
+ * Auto-select proxy
  */
 export function autoProxy(socks5?: string, http?: string): ProxyOptions {
-    // SOCKS5 代理优先
+    // SOCKS5 proxy takes priority
     if (socks5) {
         const agent = createSocksAgent(socks5);
         if (agent) {
@@ -74,7 +74,7 @@ export function autoProxy(socks5?: string, http?: string): ProxyOptions {
         }
     }
 
-    // HTTP 代理
+    // HTTP proxy
     if (http) {
         const dispatcher = createHttpAgent(http);
         if (dispatcher) {
@@ -86,7 +86,7 @@ export function autoProxy(socks5?: string, http?: string): ProxyOptions {
         }
     }
 
-    // 无代理
+    // No proxy
     return {
         fetch: undiciFetch as unknown as typeof fetch,
         type: 'none',
@@ -94,7 +94,7 @@ export function autoProxy(socks5?: string, http?: string): ProxyOptions {
 }
 
 /**
- * 使用代理发起请求
+ * Make request using proxy
  */
 export async function proxyFetch(
     url: string,

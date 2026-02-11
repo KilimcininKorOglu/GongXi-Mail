@@ -8,7 +8,7 @@ const AUTH_TAG_LENGTH = 16;
 const SALT_ROUNDS = 10;
 
 /**
- * 生成加密密钥（从环境变量派生）
+ * Generate encryption key (derived from environment variable)
  */
 function getEncryptionKey(): Buffer {
     return createHash('sha256').update(env.ENCRYPTION_KEY).digest();
@@ -27,7 +27,7 @@ export function encrypt(text: string): string {
 
     const authTag = cipher.getAuthTag();
 
-    // 格式: iv:authTag:encrypted
+    // Format: iv:authTag:encrypted
     return `${iv.toString('hex')}:${authTag.toString('hex')}:${encrypted}`;
 }
 
@@ -55,21 +55,21 @@ export function decrypt(encryptedText: string): string {
 }
 
 /**
- * 密码哈希
+ * Password hash
  */
 export async function hashPassword(password: string): Promise<string> {
     return bcrypt.hash(password, SALT_ROUNDS);
 }
 
 /**
- * 验证密码
+ * Verify password
  */
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
     return bcrypt.compare(password, hash);
 }
 
 /**
- * 生成 API Key
+ * Generate API Key
  */
 export function generateApiKey(): { key: string; prefix: string; hash: string } {
     const randomPart = randomBytes(24).toString('base64url');
@@ -81,7 +81,7 @@ export function generateApiKey(): { key: string; prefix: string; hash: string } 
 }
 
 /**
- * 哈希 API Key（用于验证）
+ * Hash API Key (for verification)
  */
 export function hashApiKey(key: string): string {
     return createHash('sha256').update(key).digest('hex');

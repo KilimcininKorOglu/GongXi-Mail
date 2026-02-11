@@ -7,12 +7,12 @@ import type { LoginInput, ChangePasswordInput } from './auth.schema.js';
 
 export const authService = {
     /**
-     * 管理员登录
+     * Admin login
      */
     async login(input: LoginInput, ip?: string) {
         const { username, password } = input;
 
-        // 查询管理员
+        // Query admin
         const admin = await prisma.admin.findUnique({
             where: { username },
             select: {
@@ -24,10 +24,10 @@ export const authService = {
             },
         });
 
-        // 管理员不存在，检查是否是默认管理员
+        // Admin doesn't exist, check if it's the default admin
         if (!admin) {
             if (username === env.ADMIN_USERNAME && password === env.ADMIN_PASSWORD) {
-                // 如果是默认管理员但数据库不存在，自动创建
+                // If it's the default admin but doesn't exist in database, auto-create
                 const passwordHash = await hashPassword(password);
                 const newAdmin = await prisma.admin.create({
                     data: {
@@ -38,7 +38,7 @@ export const authService = {
                     },
                 });
 
-                // 使用新创建的管理员信息生成 Token
+                // Generate Token using newly created admin info
                 const token = await signToken({
                     sub: newAdmin.id.toString(),
                     username: newAdmin.username,
@@ -58,18 +58,18 @@ export const authService = {
             throw new AppError('INVALID_CREDENTIALS', 'Invalid username or password', 401);
         }
 
-        // 检查状态
+        // Check status
         if (admin.status !== 'ACTIVE') {
             throw new AppError('ACCOUNT_DISABLED', 'Account is disabled', 403);
         }
 
-        // 验证密码
+        // Verify password
         const isValid = await verifyPassword(password, admin.passwordHash);
         if (!isValid) {
             throw new AppError('INVALID_CREDENTIALS', 'Invalid username or password', 401);
         }
 
-        // 更新登录信息
+        // Update login info
         await prisma.admin.update({
             where: { id: admin.id },
             data: {
@@ -78,7 +78,7 @@ export const authService = {
             },
         });
 
-        // 生成 Token
+        // Generate Token
         const token = await signToken({
             sub: admin.id.toString(),
             username: admin.username,
@@ -96,12 +96,12 @@ export const authService = {
     },
 
     /**
-     * 修改密码
+     * Change password
      */
     async changePassword(adminId: number, input: ChangePasswordInput) {
         const { oldPassword, newPassword } = input;
 
-        // 环境变量管理员（id=0）不能修改密码
+        // Environment variable admin (id=0) cannot change password
         if (adminId === 0) {
             throw new AppError('CANNOT_CHANGE', 'Cannot change password for default admin', 400);
         }
@@ -130,7 +130,7 @@ export const authService = {
     },
 
     /**
-     * 获取当前管理员信息
+     * Get current admin info
      */
     async getMe(adminId: number) {
         if (adminId === 0) {

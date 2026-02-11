@@ -31,42 +31,42 @@ export async function buildApp() {
         } : true,
     });
 
-    // 插件
+    // Plugins
     await fastify.register(fastifyCors, {
         origin: true,
         credentials: true,
     });
 
     await fastify.register(fastifyHelmet, {
-        contentSecurityPolicy: false, // 允许前端加载
+        contentSecurityPolicy: false, // Allow frontend loading
     });
 
     await fastify.register(fastifyCookie);
 
-    // 自定义插件
+    // Custom plugins
     await fastify.register(errorPlugin);
     await fastify.register(authPlugin);
 
-    // 静态文件（前端）- 禁用 fastify-static 的默认 404 处理
+    // Static files (frontend) - disable fastify-static's default 404 handling
     await fastify.register(fastifyStatic, {
         root: join(__dirname, '../../public'),
         prefix: '/',
-        wildcard: false, // 禁用通配符，让我们自定义处理 SPA
+        wildcard: false, // Disable wildcard, let us handle SPA custom
     });
 
-    // API 路由
+    // API routes
     await fastify.register(authRoutes, { prefix: '/admin/auth' });
     await fastify.register(adminRoutes, { prefix: '/admin/admins' });
     await fastify.register(apiKeyRoutes, { prefix: '/admin/api-keys' });
     await fastify.register(emailRoutes, { prefix: '/admin/emails' });
     await fastify.register(dashboardRoutes, { prefix: '/admin/dashboard' });
 
-    // 外部 API
+    // External API
     await fastify.register(mailRoutes, { prefix: '/api' });
 
-    // SPA fallback - 现在可以安全使用 setNotFoundHandler
+    // SPA fallback - now can safely use setNotFoundHandler
     fastify.setNotFoundHandler(async (request, reply) => {
-        // 如果是 API 路由，返回 404 JSON
+        // If it's an API route, return 404 JSON
         if (request.url.startsWith('/api') || request.url.startsWith('/admin')) {
             return reply.status(404).send({
                 success: false,
@@ -74,7 +74,7 @@ export async function buildApp() {
             });
         }
 
-        // 否则返回 index.html（SPA）
+        // Otherwise return index.html (SPA)
         return reply.sendFile('index.html');
     });
 

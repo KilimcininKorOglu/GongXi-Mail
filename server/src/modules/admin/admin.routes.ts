@@ -3,32 +3,32 @@ import { adminService } from './admin.service.js';
 import { createAdminSchema, updateAdminSchema, listAdminSchema } from './admin.schema.js';
 
 const adminRoutes: FastifyPluginAsync = async (fastify) => {
-    // 所有路由都需要 JWT 认证 + 超级管理员权限
+    // All routes require JWT authentication + super admin permission
     fastify.addHook('preHandler', fastify.authenticateJwt);
     fastify.addHook('preHandler', fastify.requireSuperAdmin);
 
-    // 列表
+    // List
     fastify.get('/', async (request) => {
         const input = listAdminSchema.parse(request.query);
         const result = await adminService.list(input);
         return { success: true, data: result };
     });
 
-    // 详情
+    // Details
     fastify.get('/:id', async (request) => {
         const { id } = request.params as { id: string };
         const admin = await adminService.getById(parseInt(id));
         return { success: true, data: admin };
     });
 
-    // 创建
+    // Create
     fastify.post('/', async (request) => {
         const input = createAdminSchema.parse(request.body);
         const admin = await adminService.create(input);
         return { success: true, data: admin };
     });
 
-    // 更新
+    // Update
     fastify.put('/:id', async (request) => {
         const { id } = request.params as { id: string };
         const input = updateAdminSchema.parse(request.body);
@@ -36,7 +36,7 @@ const adminRoutes: FastifyPluginAsync = async (fastify) => {
         return { success: true, data: admin };
     });
 
-    // 删除
+    // Delete
     fastify.delete('/:id', async (request) => {
         const { id } = request.params as { id: string };
         await adminService.delete(parseInt(id));

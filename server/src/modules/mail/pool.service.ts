@@ -4,11 +4,11 @@ import { AppError } from '../../plugins/error.js';
 
 export const poolService = {
     /**
-     * 获取未被该 API Key 使用过的邮箱
+     * Get email not used by this API Key
      */
     async getUnusedEmail(apiKeyId: number) {
-        // 使用事务或重试逻辑在通过路由层处理并发
-        // 这里仅返回一个看似可用的邮箱
+        // Use transaction or retry logic handled at route layer for concurrency
+        // Here we just return an apparently available email
         const email = await prisma.emailAccount.findFirst({
             where: {
                 status: 'ACTIVE',
@@ -38,13 +38,13 @@ export const poolService = {
     },
 
     /**
-     * 标记邮箱已被使用，如果是并发导致的重复使用则抛出异常
+     * Mark email as used, throw exception if duplicate due to concurrency
      */
     async markUsed(apiKeyId: number, emailAccountId: number) {
-        // 检查是否已被其他 API Key "抢占" (如果业务逻辑要求全局唯一)
-        // 但目前逻辑是：一个 API Key 不能重复使用同一个邮箱，不同 API Key 可以共用同一个邮箱（如果池是共享的）
-        // 根据 "使用过的邮箱不会再被自动分配给同一 API Key"，说明池是共享的，但通过 usage 表隔离
-        // 所以这里唯一的冲突是：同一个 API Key 的并发请求可能会尝试分配同一个邮箱
+        // Check if already "grabbed" by another API Key (if business logic requires global uniqueness)
+        // But current logic is: one API Key cannot reuse the same email, different API Keys can share the same email (if pool is shared)
+        // According to "used emails won't be auto-assigned to the same API Key again", the pool is shared but isolated via usage table
+        // So the only conflict here is: concurrent requests from the same API Key may try to allocate the same email
 
         try {
             await prisma.emailUsage.create({
@@ -60,7 +60,7 @@ export const poolService = {
     },
 
     /**
-     * 检查 API Key 是否拥有该邮箱的使用权
+     * Check if API Key has ownership of this email
      */
     async checkOwnership(apiKeyId: number, emailAddress: string) {
         const email = await prisma.emailAccount.findUnique({
@@ -84,7 +84,7 @@ export const poolService = {
     },
 
     /**
-     * 获取已分配给该 API Key 的邮箱列表
+     * Get list of emails allocated to this API Key
      */
     async getAllocatedEmails(apiKeyId: number) {
         const usages = await prisma.emailUsage.findMany({
@@ -108,7 +108,7 @@ export const poolService = {
     },
 
     /**
-     * 获取使用统计
+     * Get usage statistics
      */
     async getStats(apiKeyId: number) {
         const [total, used] = await Promise.all([
@@ -120,7 +120,7 @@ export const poolService = {
     },
 
     /**
-     * 重置使用记录
+     * Reset usage records
      */
     async reset(apiKeyId: number) {
         await prisma.emailUsage.deleteMany({ where: { apiKeyId } });
@@ -128,7 +128,7 @@ export const poolService = {
     },
 
     /**
-     * 获取所有邮箱及其使用状态 (Admin 用)
+     * Get all emails with usage status (for Admin)
      */
     async getEmailsWithUsage(apiKeyId: number) {
         const [emails, usedIds] = await Promise.all([
@@ -153,13 +153,13 @@ export const poolService = {
     },
 
     /**
-     * 更新邮箱使用状态 (Admin 用)
+     * Update email usage status (for Admin)
      */
     async updateEmailUsage(apiKeyId: number, emailIds: number[]) {
-        // 删除所有现有记录
+        // Delete all existing records
         await prisma.emailUsage.deleteMany({ where: { apiKeyId } });
 
-        // 创建新记录
+        // Create new records
         if (emailIds.length > 0) {
             await prisma.emailUsage.createMany({
                 data: emailIds.map(emailAccountId => ({

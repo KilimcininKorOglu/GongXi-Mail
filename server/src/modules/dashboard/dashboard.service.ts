@@ -2,7 +2,7 @@ import prisma from '../../lib/prisma.js';
 
 export const dashboardService = {
     /**
-     * 获取统计数据
+     * Get statistics
      */
     async getStats() {
         const [
@@ -43,7 +43,7 @@ export const dashboardService = {
     },
 
     /**
-     * 获取 API 调用趋势
+     * Get API call trend
      */
     async getApiTrend(days: number = 7) {
         const result: { date: string; count: number }[] = [];
@@ -74,7 +74,7 @@ export const dashboardService = {
     },
 
     /**
-     * 获取操作日志
+     * Get operation logs
      */
     async getLogs(options: { page?: number; pageSize?: number; action?: string }) {
         const { page = 1, pageSize = 20, action } = options;

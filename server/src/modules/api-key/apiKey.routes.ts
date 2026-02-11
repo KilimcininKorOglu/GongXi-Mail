@@ -4,46 +4,46 @@ import { poolService } from '../mail/pool.service.js';
 import { createApiKeySchema, updateApiKeySchema, listApiKeySchema } from './apiKey.schema.js';
 
 const apiKeyRoutes: FastifyPluginAsync = async (fastify) => {
-    // 所有路由需要 JWT 认证
+    // All routes require JWT authentication
     fastify.addHook('preHandler', fastify.authenticateJwt);
 
-    // 列表
+    // List
     fastify.get('/', async (request) => {
         const input = listApiKeySchema.parse(request.query);
         const result = await apiKeyService.list(input);
         return { success: true, data: result };
     });
 
-    // 创建
+    // Create
     fastify.post('/', async (request) => {
         const input = createApiKeySchema.parse(request.body);
         const apiKey = await apiKeyService.create(input, request.user!.id);
         return { success: true, data: apiKey };
     });
 
-    // 详情
+    // Details
     fastify.get('/:id', async (request) => {
         const { id } = request.params as { id: string };
         const apiKey = await apiKeyService.getById(parseInt(id));
         return { success: true, data: apiKey };
     });
 
-    // 使用统计（调用次数）
+    // Usage statistics (call count)
     fastify.get('/:id/usage', async (request) => {
         const { id } = request.params as { id: string };
-        // 获取邮箱池统计
+        // Get email pool statistics
         const poolStats = await poolService.getStats(parseInt(id));
         return { success: true, data: poolStats };
     });
 
-    // 重置邮箱池
+    // Reset email pool
     fastify.post('/:id/reset-pool', async (request) => {
         const { id } = request.params as { id: string };
         await poolService.reset(parseInt(id));
-        return { success: true, data: { message: '邮箱池已重置' } };
+        return { success: true, data: { message: 'Email pool has been reset' } };
     });
 
-    // 更新
+    // Update
     fastify.put('/:id', async (request) => {
         const { id } = request.params as { id: string };
         const input = updateApiKeySchema.parse(request.body);
@@ -51,21 +51,21 @@ const apiKeyRoutes: FastifyPluginAsync = async (fastify) => {
         return { success: true, data: apiKey };
     });
 
-    // 删除
+    // Delete
     fastify.delete('/:id', async (request) => {
         const { id } = request.params as { id: string };
         await apiKeyService.delete(parseInt(id));
         return { success: true, data: { message: 'API Key deleted' } };
     });
 
-    // 获取邮箱列表及使用状态
+    // Get email list with usage status
     fastify.get('/:id/pool-emails', async (request) => {
         const { id } = request.params as { id: string };
         const emails = await poolService.getEmailsWithUsage(parseInt(id));
         return { success: true, data: emails };
     });
 
-    // 更新邮箱使用状态
+    // Update email usage status
     fastify.put('/:id/pool-emails', async (request) => {
         const { id } = request.params as { id: string };
         const { emailIds } = request.body as { emailIds: number[] };

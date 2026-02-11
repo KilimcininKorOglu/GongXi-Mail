@@ -3,12 +3,12 @@ import { authService } from './auth.service.js';
 import { loginSchema, changePasswordSchema } from './auth.schema.js';
 
 const authRoutes: FastifyPluginAsync = async (fastify) => {
-    // 登录
+    // Login
     fastify.post('/login', async (request, reply) => {
         const input = loginSchema.parse(request.body);
         const result = await authService.login(input, request.ip);
 
-        // 设置 Cookie
+        // Set Cookie
         reply.cookie('token', result.token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -19,13 +19,13 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
         return { success: true, data: result };
     });
 
-    // 登出
+    // Logout
     fastify.post('/logout', async (request, reply) => {
         reply.clearCookie('token');
         return { success: true, data: { message: 'Logged out' } };
     });
 
-    // 获取当前用户
+    // Get current user
     fastify.get('/me', {
         preHandler: [fastify.authenticateJwt],
     }, async (request, reply) => {
@@ -33,7 +33,7 @@ const authRoutes: FastifyPluginAsync = async (fastify) => {
         return { success: true, data: admin };
     });
 
-    // 修改密码
+    // Change password
     fastify.post('/change-password', {
         preHandler: [fastify.authenticateJwt],
     }, async (request, reply) => {

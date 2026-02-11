@@ -23,13 +23,13 @@ const LoginPage: React.FC = () => {
             const res: any = await authApi.login(values.username, values.password);
             if (res.code === 200) {
                 setAuth(res.data.token, res.data.admin);
-                message.success('登录成功');
+                message.success('Login successful');
                 navigate('/');
             } else {
-                message.error(res.message || '登录失败');
+                message.error(res.message || 'Login failed');
             }
         } catch (err: any) {
-            message.error(err.message || '登录失败');
+            message.error(err.message || 'Login failed');
         } finally {
             setLoading(false);
         }
@@ -53,9 +53,9 @@ const LoginPage: React.FC = () => {
             >
                 <div style={{ textAlign: 'center', marginBottom: 24 }}>
                     <Title level={3} style={{ margin: '0 0 8px 0' }}>
-                        GongXi 邮箱
+                        GongXi Mail
                     </Title>
-                    <Text type="secondary">管理控制台</Text>
+                    <Text type="secondary">Admin Console</Text>
                 </div>
 
                 <Form
@@ -65,21 +65,21 @@ const LoginPage: React.FC = () => {
                 >
                     <Form.Item
                         name="username"
-                        rules={[{ required: true, message: '请输入用户名' }]}
+                        rules={[{ required: true, message: 'Please enter username' }]}
                     >
                         <Input
                             prefix={<UserOutlined />}
-                            placeholder="用户名"
+                            placeholder="Username"
                         />
                     </Form.Item>
 
                     <Form.Item
                         name="password"
-                        rules={[{ required: true, message: '请输入密码' }]}
+                        rules={[{ required: true, message: 'Please enter password' }]}
                     >
                         <Input.Password
                             prefix={<LockOutlined />}
-                            placeholder="密码"
+                            placeholder="Password"
                         />
                     </Form.Item>
 
@@ -90,7 +90,7 @@ const LoginPage: React.FC = () => {
                             loading={loading}
                             block
                         >
-                            登录
+                            Login
                         </Button>
                     </Form.Item>
                 </Form>

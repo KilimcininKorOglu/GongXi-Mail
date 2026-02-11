@@ -56,7 +56,7 @@ const AdminsPage: React.FC = () => {
                 setTotal(res.data.total);
             }
         } catch (err) {
-            message.error('获取数据失败');
+            message.error('Failed to fetch data');
         } finally {
             setLoading(false);
         }
@@ -84,13 +84,13 @@ const AdminsPage: React.FC = () => {
         try {
             const res: any = await adminApi.delete(id);
             if (res.code === 200) {
-                message.success('删除成功');
+                message.success('Deleted successfully');
                 fetchData();
             } else {
                 message.error(res.message);
             }
         } catch (err: any) {
-            message.error(err.message || '删除失败');
+            message.error(err.message || 'Delete failed');
         }
     };
 
@@ -99,13 +99,13 @@ const AdminsPage: React.FC = () => {
             const values = await form.validateFields();
 
             if (editingId) {
-                // 如果密码为空，不更新密码
+                // If password is empty, don't update password
                 if (!values.password) {
                     delete values.password;
                 }
                 const res: any = await adminApi.update(editingId, values);
                 if (res.code === 200) {
-                    message.success('更新成功');
+                    message.success('Updated successfully');
                     setModalVisible(false);
                     fetchData();
                 } else {
@@ -114,7 +114,7 @@ const AdminsPage: React.FC = () => {
             } else {
                 const res: any = await adminApi.create(values);
                 if (res.code === 200) {
-                    message.success('创建成功');
+                    message.success('Created successfully');
                     setModalVisible(false);
                     fetchData();
                 } else {
@@ -130,43 +130,43 @@ const AdminsPage: React.FC = () => {
 
     const columns: ColumnsType<Admin> = [
         {
-            title: '用户名',
+            title: 'Username',
             dataIndex: 'username',
             key: 'username',
         },
         {
-            title: '邮箱',
+            title: 'Email',
             dataIndex: 'email',
             key: 'email',
             render: (val) => val || '-',
         },
         {
-            title: '角色',
+            title: 'Role',
             dataIndex: 'role',
             key: 'role',
             render: (role) => (
                 <Tag color={role === 'super_admin' ? 'gold' : 'blue'}>
-                    {role === 'super_admin' ? '超级管理员' : '管理员'}
+                    {role === 'super_admin' ? 'Super Admin' : 'Admin'}
                 </Tag>
             ),
         },
         {
-            title: '状态',
+            title: 'Status',
             dataIndex: 'status',
             key: 'status',
             render: (status) => (
                 <Tag color={status === 'active' ? 'green' : 'red'}>
-                    {status === 'active' ? '启用' : '禁用'}
+                    {status === 'active' ? 'Active' : 'Disabled'}
                 </Tag>
             ),
         },
         {
-            title: '最后登录',
+            title: 'Last Login',
             dataIndex: 'last_login_at',
             key: 'last_login_at',
             render: (val, record) =>
                 val ? (
-                    <Tooltip title={`IP: ${record.last_login_ip || '未知'}`}>
+                    <Tooltip title={`IP: ${record.last_login_ip || 'Unknown'}`}>
                         {dayjs(val).format('YYYY-MM-DD HH:mm')}
                     </Tooltip>
                 ) : (
@@ -174,18 +174,18 @@ const AdminsPage: React.FC = () => {
                 ),
         },
         {
-            title: '创建时间',
+            title: 'Created',
             dataIndex: 'created_at',
             key: 'created_at',
             render: (val) => dayjs(val).format('YYYY-MM-DD HH:mm'),
         },
         {
-            title: '操作',
+            title: 'Actions',
             key: 'action',
             width: 120,
             render: (_, record) => (
                 <Space>
-                    <Tooltip title="编辑">
+                    <Tooltip title="Edit">
                         <Button
                             type="text"
                             icon={<EditOutlined />}
@@ -193,9 +193,9 @@ const AdminsPage: React.FC = () => {
                         />
                     </Tooltip>
                     {record.id !== currentAdmin?.id && (
-                        <Tooltip title="删除">
+                        <Tooltip title="Delete">
                             <Popconfirm
-                                title="确定要删除此管理员吗？"
+                                title="Are you sure you want to delete this admin?"
                                 onConfirm={() => handleDelete(record.id)}
                             >
                                 <Button type="text" danger icon={<DeleteOutlined />} />
@@ -211,10 +211,10 @@ const AdminsPage: React.FC = () => {
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
                 <Title level={4} style={{ margin: 0 }}>
-                    管理员管理
+                    Admin Management
                 </Title>
                 <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
-                    添加管理员
+                    Add Admin
                 </Button>
             </div>
 
@@ -228,7 +228,7 @@ const AdminsPage: React.FC = () => {
                     pageSize,
                     total,
                     showSizeChanger: true,
-                    showTotal: (total) => `共 ${total} 条`,
+                    showTotal: (total) => `Total ${total} items`,
                     onChange: (p, ps) => {
                         setPage(p);
                         setPageSize(ps);
@@ -237,7 +237,7 @@ const AdminsPage: React.FC = () => {
             />
 
             <Modal
-                title={editingId ? '编辑管理员' : '添加管理员'}
+                title={editingId ? 'Edit Admin' : 'Add Admin'}
                 open={modalVisible}
                 onOk={handleSubmit}
                 onCancel={() => setModalVisible(false)}
@@ -245,43 +245,43 @@ const AdminsPage: React.FC = () => {
                 <Form form={form} layout="vertical">
                     <Form.Item
                         name="username"
-                        label="用户名"
+                        label="Username"
                         rules={[
-                            { required: true, message: '请输入用户名' },
-                            { min: 3, message: '用户名至少 3 个字符' },
+                            { required: true, message: 'Please enter username' },
+                            { min: 3, message: 'Username must be at least 3 characters' },
                         ]}
                     >
-                        <Input placeholder="请输入用户名" />
+                        <Input placeholder="Enter username" />
                     </Form.Item>
                     <Form.Item
                         name="password"
-                        label="密码"
+                        label="Password"
                         rules={
                             editingId
                                 ? []
                                 : [
-                                    { required: true, message: '请输入密码' },
-                                    { min: 6, message: '密码至少 6 个字符' },
+                                    { required: true, message: 'Please enter password' },
+                                    { min: 6, message: 'Password must be at least 6 characters' },
                                 ]
                         }
                     >
                         <Input.Password
-                            placeholder={editingId ? '留空则不修改密码' : '请输入密码'}
+                            placeholder={editingId ? 'Leave empty to keep current password' : 'Enter password'}
                         />
                     </Form.Item>
-                    <Form.Item name="email" label="邮箱">
-                        <Input placeholder="可选" type="email" />
+                    <Form.Item name="email" label="Email">
+                        <Input placeholder="Optional" type="email" />
                     </Form.Item>
-                    <Form.Item name="role" label="角色" initialValue="admin">
+                    <Form.Item name="role" label="Role" initialValue="admin">
                         <Select>
-                            <Select.Option value="admin">管理员</Select.Option>
-                            <Select.Option value="super_admin">超级管理员</Select.Option>
+                            <Select.Option value="admin">Admin</Select.Option>
+                            <Select.Option value="super_admin">Super Admin</Select.Option>
                         </Select>
                     </Form.Item>
-                    <Form.Item name="status" label="状态" initialValue="active">
+                    <Form.Item name="status" label="Status" initialValue="active">
                         <Select>
-                            <Select.Option value="active">启用</Select.Option>
-                            <Select.Option value="disabled">禁用</Select.Option>
+                            <Select.Option value="active">Active</Select.Option>
+                            <Select.Option value="disabled">Disabled</Select.Option>
                         </Select>
                     </Form.Item>
                 </Form>

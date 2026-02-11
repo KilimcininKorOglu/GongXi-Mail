@@ -17,7 +17,7 @@ const SettingsPage: React.FC = () => {
         confirmPassword: string;
     }) => {
         if (values.newPassword !== values.confirmPassword) {
-            message.error('两次输入的密码不一致');
+            message.error('Passwords do not match');
             return;
         }
 
@@ -25,13 +25,13 @@ const SettingsPage: React.FC = () => {
         try {
             const res: any = await authApi.changePassword(values.oldPassword, values.newPassword);
             if (res.code === 200) {
-                message.success('密码修改成功');
+                message.success('Password changed successfully');
                 form.resetFields();
             } else {
                 message.error(res.message);
             }
         } catch (err: any) {
-            message.error(err.message || '密码修改失败');
+            message.error(err.message || 'Failed to change password');
         } finally {
             setLoading(false);
         }
@@ -39,25 +39,25 @@ const SettingsPage: React.FC = () => {
 
     return (
         <div>
-            <Title level={4}>设置</Title>
+            <Title level={4}>Settings</Title>
 
             <Space direction="vertical" size="large" style={{ width: '100%' }}>
-                <Card title="个人信息">
+                <Card title="Personal Information">
                     <div style={{ display: 'grid', gap: 16 }}>
                         <div>
-                            <Text type="secondary">用户名</Text>
+                            <Text type="secondary">Username</Text>
                             <div style={{ fontSize: 16 }}>{admin?.username}</div>
                         </div>
                         <div>
-                            <Text type="secondary">角色</Text>
+                            <Text type="secondary">Role</Text>
                             <div style={{ fontSize: 16 }}>
-                                {admin?.role === 'super_admin' ? '超级管理员' : '管理员'}
+                                {admin?.role === 'super_admin' ? 'Super Admin' : 'Admin'}
                             </div>
                         </div>
                     </div>
                 </Card>
 
-                <Card title="修改密码">
+                <Card title="Change Password">
                     <Form
                         form={form}
                         layout="vertical"
@@ -66,57 +66,57 @@ const SettingsPage: React.FC = () => {
                     >
                         <Form.Item
                             name="oldPassword"
-                            label="当前密码"
-                            rules={[{ required: true, message: '请输入当前密码' }]}
+                            label="Current Password"
+                            rules={[{ required: true, message: 'Please enter current password' }]}
                         >
-                            <Input.Password prefix={<LockOutlined />} placeholder="当前密码" />
+                            <Input.Password prefix={<LockOutlined />} placeholder="Current password" />
                         </Form.Item>
 
                         <Form.Item
                             name="newPassword"
-                            label="新密码"
+                            label="New Password"
                             rules={[
-                                { required: true, message: '请输入新密码' },
-                                { min: 6, message: '密码至少 6 个字符' },
+                                { required: true, message: 'Please enter new password' },
+                                { min: 6, message: 'Password must be at least 6 characters' },
                             ]}
                         >
-                            <Input.Password prefix={<LockOutlined />} placeholder="新密码" />
+                            <Input.Password prefix={<LockOutlined />} placeholder="New password" />
                         </Form.Item>
 
                         <Form.Item
                             name="confirmPassword"
-                            label="确认新密码"
+                            label="Confirm New Password"
                             rules={[
-                                { required: true, message: '请确认新密码' },
+                                { required: true, message: 'Please confirm new password' },
                                 ({ getFieldValue }) => ({
                                     validator(_, value) {
                                         if (!value || getFieldValue('newPassword') === value) {
                                             return Promise.resolve();
                                         }
-                                        return Promise.reject(new Error('两次输入的密码不一致'));
+                                        return Promise.reject(new Error('Passwords do not match'));
                                     },
                                 }),
                             ]}
                         >
-                            <Input.Password prefix={<LockOutlined />} placeholder="确认新密码" />
+                            <Input.Password prefix={<LockOutlined />} placeholder="Confirm new password" />
                         </Form.Item>
 
                         <Form.Item>
                             <Button type="primary" htmlType="submit" loading={loading}>
-                                修改密码
+                                Change Password
                             </Button>
                         </Form.Item>
                     </Form>
                 </Card>
 
-                <Card title="API 使用说明">
+                <Card title="API Usage Guide">
                     <div style={{ marginBottom: 16 }}>
-                        <Text strong>外部 API 调用方式</Text>
+                        <Text strong>External API Call Methods</Text>
                     </div>
 
                     <div style={{ background: '#f5f5f5', padding: 16, borderRadius: 8, marginBottom: 16 }}>
                         <Text code style={{ display: 'block', marginBottom: 8 }}>
-                            # 通过 Header 传递 API Key
+                            # Pass API Key via Header
                         </Text>
                         <Text code style={{ display: 'block', wordBreak: 'break-all' }}>
                             curl -H "X-API-Key: your_api_key" https://your-domain.com/api/mail_all
@@ -125,7 +125,7 @@ const SettingsPage: React.FC = () => {
 
                     <div style={{ background: '#f5f5f5', padding: 16, borderRadius: 8 }}>
                         <Text code style={{ display: 'block', marginBottom: 8 }}>
-                            # 通过 Query 参数传递 API Key
+                            # Pass API Key via Query parameter
                         </Text>
                         <Text code style={{ display: 'block', wordBreak: 'break-all' }}>
                             curl "https://your-domain.com/api/mail_all?api_key=your_api_key&email=xxx@outlook.com&client_id=xxx&refresh_token=xxx"

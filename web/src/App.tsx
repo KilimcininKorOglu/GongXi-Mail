@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ConfigProvider, App as AntApp } from 'antd';
-import zhCN from 'antd/locale/zh_CN';
+import enUS from 'antd/locale/en_US';
 import { useAuthStore } from './stores/authStore';
 
 // Layouts
@@ -17,7 +17,7 @@ import OperationLogsPage from './pages/operation-logs';
 import AdminsPage from './pages/admins';
 import SettingsPage from './pages/settings';
 
-// 路由守卫组件
+// Route guard component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated } = useAuthStore();
 
@@ -28,7 +28,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   return <>{children}</>;
 };
 
-// 超级管理员路由守卫
+// Super admin route guard
 const SuperAdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, admin } = useAuthStore();
 
@@ -46,7 +46,7 @@ const SuperAdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) 
 const App: React.FC = () => {
   return (
     <ConfigProvider
-      locale={zhCN}
+      locale={enUS}
       theme={{
         cssVar: {},
         token: {
@@ -58,10 +58,10 @@ const App: React.FC = () => {
       <AntApp>
         <BrowserRouter>
           <Routes>
-            {/* 登录页 */}
+            {/* Login page */}
             <Route path="/login" element={<LoginPage />} />
 
-            {/* 需要认证的页面 */}
+            {/* Pages requiring authentication */}
             <Route
               path="/"
               element={
@@ -87,7 +87,7 @@ const App: React.FC = () => {
               <Route path="settings" element={<SettingsPage />} />
             </Route>
 
-            {/* 404 重定向 */}
+            {/* 404 redirect */}
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </BrowserRouter>

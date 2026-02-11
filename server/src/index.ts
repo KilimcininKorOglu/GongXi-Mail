@@ -6,7 +6,7 @@ import prisma from './lib/prisma.js';
 async function main() {
     const app = await buildApp();
 
-    // 优雅关闭
+    // Graceful shutdown
     const shutdown = async () => {
         logger.info('Shutting down...');
         await app.close();
@@ -18,11 +18,11 @@ async function main() {
     process.on('SIGTERM', shutdown);
 
     try {
-        // 测试数据库连接
+        // Test database connection
         await prisma.$connect();
         logger.info('Database connected');
 
-        // 启动服务器
+        // Start server
         await app.listen({ port: env.PORT, host: '0.0.0.0' });
         logger.info(`Server running at http://localhost:${env.PORT}`);
     } catch (err) {

@@ -10,7 +10,7 @@ const api = axios.create({
     },
 });
 
-// 请求拦截器
+// Request interceptor
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
@@ -24,18 +24,18 @@ api.interceptors.request.use(
     }
 );
 
-// 响应拦截器 - 适配新的响应格式 { success, data, error }
+// Response interceptor - adapts to new response format { success, data, error }
 api.interceptors.response.use(
     (response) => {
         const data = response.data;
 
-        // 新格式：{ success: true, data: ... }
+        // New format: { success: true, data: ... }
         if (data && typeof data.success === 'boolean') {
             if (data.success) {
-                // 返回兼容旧格式的对象
+                // Return object compatible with old format
                 return { code: 200, data: data.data, message: 'Success' };
             } else {
-                // 错误情况
+                // Error case
                 return Promise.reject({
                     code: data.error?.code || 'ERROR',
                     message: data.error?.message || 'Request failed',
@@ -43,7 +43,7 @@ api.interceptors.response.use(
             }
         }
 
-        // 旧格式兼容
+        // Old format compatibility
         return data;
     },
     (error) => {
@@ -51,13 +51,13 @@ api.interceptors.response.use(
             const { status, data } = error.response;
 
             if (status === 401) {
-                // Token 过期或无效，跳转到登录页
+                // Token expired or invalid, redirect to login page
                 localStorage.removeItem('token');
                 localStorage.removeItem('admin');
                 window.location.href = '/login';
             }
 
-            // 新格式错误处理
+            // New format error handling
             if (data && data.error) {
                 return Promise.reject({
                     code: data.error.code || status,
@@ -81,7 +81,7 @@ api.interceptors.response.use(
 export default api;
 
 // ========================================
-// 认证 API
+// Auth API
 // ========================================
 
 export const authApi = {
@@ -99,7 +99,7 @@ export const authApi = {
 };
 
 // ========================================
-// 管理员 API
+// Admin API
 // ========================================
 
 export const adminApi = {
@@ -153,7 +153,7 @@ export const apiKeyApi = {
 };
 
 // ========================================
-// 邮箱账户 API
+// Email Account API
 // ========================================
 
 export const emailApi = {
@@ -181,17 +181,17 @@ export const emailApi = {
     batchDelete: (ids: number[]) =>
         api.post('/admin/emails/batch-delete', { ids }),
 
-    // 查看邮件 (管理员专用)
+    // View emails (admin only)
     viewMails: (id: number, mailbox?: string) =>
         api.get(`/admin/emails/${id}/mails`, { params: { mailbox } }),
 
-    // 清空邮箱 (管理员专用)
+    // Clear mailbox (admin only)
     clearMailbox: (id: number, mailbox?: string) =>
         api.post(`/admin/emails/${id}/clear`, { mailbox }),
 };
 
 // ========================================
-// 仪表盘 API
+// Dashboard API
 // ========================================
 
 export const dashboardApi = {
@@ -206,7 +206,7 @@ export const dashboardApi = {
 };
 
 // ========================================
-// 操作日志 API（废弃，使用 dashboardApi.getLogs）
+// Operation Logs API (deprecated, use dashboardApi.getLogs)
 // ========================================
 
 export const logsApi = {

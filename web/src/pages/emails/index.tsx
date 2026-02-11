@@ -80,7 +80,7 @@ const EmailsPage: React.FC = () => {
                 setTotal(res.data.total);
             }
         } catch (err) {
-            message.error('获取数据失败');
+            message.error('Failed to fetch data');
         } finally {
             setLoading(false);
         }
@@ -106,7 +106,7 @@ const EmailsPage: React.FC = () => {
                 setModalVisible(true);
             }
         } catch (err) {
-            message.error('获取详情失败');
+            message.error('Failed to get details');
         }
     };
 
@@ -114,33 +114,33 @@ const EmailsPage: React.FC = () => {
         try {
             const res: any = await emailApi.delete(id);
             if (res.code === 200) {
-                message.success('删除成功');
+                message.success('Deleted successfully');
                 fetchData();
             } else {
                 message.error(res.message);
             }
         } catch (err: any) {
-            message.error(err.message || '删除失败');
+            message.error(err.message || 'Delete failed');
         }
     };
 
     const handleBatchDelete = async () => {
         if (selectedRowKeys.length === 0) {
-            message.warning('请选择要删除的邮箱');
+            message.warning('Please select emails to delete');
             return;
         }
 
         try {
             const res: any = await emailApi.batchDelete(selectedRowKeys as number[]);
             if (res.code === 200) {
-                message.success(`成功删除 ${res.data.deleted} 个邮箱`);
+                message.success(`Successfully deleted ${res.data.deleted} emails`);
                 setSelectedRowKeys([]);
                 fetchData();
             } else {
                 message.error(res.message);
             }
         } catch (err: any) {
-            message.error(err.message || '删除失败');
+            message.error(err.message || 'Delete failed');
         }
     };
 
@@ -151,7 +151,7 @@ const EmailsPage: React.FC = () => {
             if (editingId) {
                 const res: any = await emailApi.update(editingId, values);
                 if (res.code === 200) {
-                    message.success('更新成功');
+                    message.success('Updated successfully');
                     setModalVisible(false);
                     fetchData();
                 } else {
@@ -160,7 +160,7 @@ const EmailsPage: React.FC = () => {
             } else {
                 const res: any = await emailApi.create(values);
                 if (res.code === 200) {
-                    message.success('创建成功');
+                    message.success('Created successfully');
                     setModalVisible(false);
                     fetchData();
                 } else {
@@ -176,7 +176,7 @@ const EmailsPage: React.FC = () => {
 
     const handleImport = async () => {
         if (!importContent.trim()) {
-            message.warning('请输入或粘贴邮箱数据');
+            message.warning('Please enter or paste email data');
             return;
         }
 
@@ -191,7 +191,7 @@ const EmailsPage: React.FC = () => {
                 message.error(res.message);
             }
         } catch (err: any) {
-            message.error(err.message || '导入失败');
+            message.error(err.message || 'Import failed');
         }
     };
 
@@ -208,9 +208,9 @@ const EmailsPage: React.FC = () => {
             a.click();
             URL.revokeObjectURL(url);
 
-            message.success('导出成功');
+            message.success('Export successful');
         } catch (err: any) {
-            message.error(err.message || '导出失败');
+            message.error(err.message || 'Export failed');
         }
     };
 
@@ -225,10 +225,10 @@ const EmailsPage: React.FC = () => {
             if (res.code === 200) {
                 setMailList(res.data?.messages || []);
             } else {
-                message.error(res.message || '获取邮件失败');
+                message.error(res.message || 'Failed to get emails');
             }
         } catch (err: any) {
-            message.error(err.message || '获取邮件失败');
+            message.error(err.message || 'Failed to get emails');
         } finally {
             setMailLoading(false);
         }
@@ -241,12 +241,12 @@ const EmailsPage: React.FC = () => {
             const res: any = await emailApi.viewMails(currentEmailId, currentMailbox);
             if (res.code === 200) {
                 setMailList(res.data?.messages || []);
-                message.success('刷新成功');
+                message.success('Refreshed successfully');
             } else {
-                message.error(res.message || '获取邮件失败');
+                message.error(res.message || 'Failed to get emails');
             }
         } catch (err: any) {
-            message.error(err.message || '获取邮件失败');
+            message.error(err.message || 'Failed to get emails');
         } finally {
             setMailLoading(false);
         }
@@ -257,37 +257,37 @@ const EmailsPage: React.FC = () => {
         try {
             const res: any = await emailApi.clearMailbox(currentEmailId, currentMailbox);
             if (res.code === 200) {
-                message.success(`已清空 ${res.data?.deleted || 0} 封邮件`);
+                message.success(`Cleared ${res.data?.deleted || 0} emails`);
                 setMailList([]);
             } else {
-                message.error(res.message || '清空失败');
+                message.error(res.message || 'Clear failed');
             }
         } catch (err: any) {
-            message.error(err.message || '清空失败');
+            message.error(err.message || 'Clear failed');
         }
     };
 
     const handleViewEmailDetail = (record: any) => {
-        setEmailDetailSubject(record.subject || '无主题');
-        setEmailDetailContent(record.html || record.text || '无内容');
+        setEmailDetailSubject(record.subject || 'No Subject');
+        setEmailDetailContent(record.html || record.text || 'No Content');
         setEmailDetailVisible(true);
     };
 
     const columns: ColumnsType<EmailAccount> = [
         {
-            title: '邮箱',
+            title: 'Email',
             dataIndex: 'email',
             key: 'email',
             ellipsis: true,
         },
         {
-            title: '客户端 ID',
+            title: 'Client ID',
             dataIndex: 'clientId',
             key: 'clientId',
             ellipsis: true,
         },
         {
-            title: '状态',
+            title: 'Status',
             dataIndex: 'status',
             key: 'status',
             width: 100,
@@ -298,57 +298,57 @@ const EmailsPage: React.FC = () => {
                     DISABLED: 'default',
                 };
                 const labels: Record<string, string> = {
-                    ACTIVE: '正常',
-                    ERROR: '异常',
-                    DISABLED: '禁用',
+                    ACTIVE: 'Active',
+                    ERROR: 'Error',
+                    DISABLED: 'Disabled',
                 };
                 return <Tag color={colors[status]}>{labels[status]}</Tag>;
             },
         },
         {
-            title: '最后检查',
+            title: 'Last Check',
             dataIndex: 'lastCheckAt',
             key: 'lastCheckAt',
             width: 160,
             render: (val) => (val ? dayjs(val).format('YYYY-MM-DD HH:mm') : '-'),
         },
         {
-            title: '创建时间',
+            title: 'Created',
             dataIndex: 'createdAt',
             key: 'createdAt',
             width: 160,
             render: (val) => dayjs(val).format('YYYY-MM-DD HH:mm'),
         },
         {
-            title: '操作',
+            title: 'Actions',
             key: 'action',
             width: 240,
             render: (_, record) => (
                 <Space>
-                    <Tooltip title="收件箱">
+                    <Tooltip title="Inbox">
                         <Button
                             type="text"
                             icon={<MailOutlined />}
                             onClick={() => handleViewMails(record, 'INBOX')}
                         />
                     </Tooltip>
-                    <Tooltip title="垃圾箱">
+                    <Tooltip title="Junk">
                         <Button
                             type="text"
                             icon={<DeleteOutlined style={{ color: '#faad14' }} />}
                             onClick={() => handleViewMails(record, 'Junk')}
                         />
                     </Tooltip>
-                    <Tooltip title="编辑">
+                    <Tooltip title="Edit">
                         <Button
                             type="text"
                             icon={<EditOutlined />}
                             onClick={() => handleEdit(record)}
                         />
                     </Tooltip>
-                    <Tooltip title="删除">
+                    <Tooltip title="Delete">
                         <Popconfirm
-                            title="确定要删除此邮箱吗？"
+                            title="Are you sure you want to delete this email?"
                             onConfirm={() => handleDelete(record.id)}
                         >
                             <Button type="text" danger icon={<DeleteOutlined />} />
@@ -363,11 +363,11 @@ const EmailsPage: React.FC = () => {
         <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
                 <Title level={4} style={{ margin: 0 }}>
-                    邮箱管理
+                    Email Management
                 </Title>
                 <Space>
                     <Input
-                        placeholder="搜索邮箱"
+                        placeholder="Search email"
                         prefix={<SearchOutlined />}
                         value={keyword}
                         onChange={(e) => setKeyword(e.target.value)}
@@ -375,21 +375,21 @@ const EmailsPage: React.FC = () => {
                         allowClear
                     />
                     <Button icon={<UploadOutlined />} onClick={() => setImportModalVisible(true)}>
-                        导入
+                        Import
                     </Button>
                     <Button icon={<DownloadOutlined />} onClick={handleExport}>
-                        导出
+                        Export
                     </Button>
                     {selectedRowKeys.length > 0 && (
                         <Popconfirm
-                            title={`确定要删除选中的 ${selectedRowKeys.length} 个邮箱吗？`}
+                            title={`Are you sure you want to delete ${selectedRowKeys.length} selected emails?`}
                             onConfirm={handleBatchDelete}
                         >
-                            <Button danger>批量删除 ({selectedRowKeys.length})</Button>
+                            <Button danger>Batch Delete ({selectedRowKeys.length})</Button>
                         </Popconfirm>
                     )}
                     <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
-                        添加邮箱
+                        Add Email
                     </Button>
                 </Space>
             </div>
@@ -408,7 +408,7 @@ const EmailsPage: React.FC = () => {
                     pageSize,
                     total,
                     showSizeChanger: true,
-                    showTotal: (total) => `共 ${total} 条`,
+                    showTotal: (total) => `Total ${total} items`,
                     onChange: (p, ps) => {
                         setPage(p);
                         setPageSize(ps);
@@ -417,45 +417,45 @@ const EmailsPage: React.FC = () => {
             />
 
             <Modal
-                title={editingId ? '编辑邮箱' : '添加邮箱'}
+                title={editingId ? 'Edit Email' : 'Add Email'}
                 open={modalVisible}
                 onOk={handleSubmit}
                 onCancel={() => setModalVisible(false)}
                 width={600}
             >
                 <Form form={form} layout="vertical">
-                    <Form.Item name="email" label="邮箱地址" rules={[{ required: true, message: '请输入邮箱地址' }, { type: 'email', message: '请输入有效的邮箱地址' }]}>
+                    <Form.Item name="email" label="Email Address" rules={[{ required: true, message: 'Please enter email address' }, { type: 'email', message: 'Please enter a valid email address' }]}>
                         <Input placeholder="example@outlook.com" />
                     </Form.Item>
-                    <Form.Item name="password" label="密码">
-                        <Input.Password placeholder="可选" />
+                    <Form.Item name="password" label="Password">
+                        <Input.Password placeholder="Optional" />
                     </Form.Item>
 
                     <Form.Item
                         name="clientId"
-                        label="客户端 ID"
-                        rules={[{ required: true, message: '请输入客户端 ID' }]}
+                        label="Client ID"
+                        rules={[{ required: true, message: 'Please enter Client ID' }]}
                     >
-                        <Input placeholder="Azure AD 应用程序 ID" />
+                        <Input placeholder="Azure AD Application ID" />
                     </Form.Item>
                     <Form.Item
                         name="refreshToken"
-                        label="刷新令牌"
-                        rules={[{ required: !editingId, message: '请输入刷新令牌' }]}
+                        label="Refresh Token"
+                        rules={[{ required: !editingId, message: 'Please enter Refresh Token' }]}
                     >
                         <TextArea rows={4} placeholder="OAuth2 Refresh Token" />
                     </Form.Item>
-                    <Form.Item name="status" label="状态" initialValue="ACTIVE">
+                    <Form.Item name="status" label="Status" initialValue="ACTIVE">
                         <Select>
-                            <Select.Option value="ACTIVE">正常</Select.Option>
-                            <Select.Option value="DISABLED">禁用</Select.Option>
+                            <Select.Option value="ACTIVE">Active</Select.Option>
+                            <Select.Option value="DISABLED">Disabled</Select.Option>
                         </Select>
                     </Form.Item>
                 </Form>
             </Modal>
 
             <Modal
-                title="批量导入邮箱"
+                title="Batch Import Emails"
                 open={importModalVisible}
                 onOk={handleImport}
                 onCancel={() => setImportModalVisible(false)}
@@ -464,13 +464,13 @@ const EmailsPage: React.FC = () => {
                 <Space direction="vertical" style={{ width: '100%' }} size="middle">
                     <div>
                         <Text type="secondary">
-                            上传文件或粘贴内容。支持多种格式，将尝试自动解析。
+                            Upload file or paste content. Supports multiple formats, will try to auto-parse.
                             <br />
-                            推荐格式：邮箱{separator}密码{separator}客户端ID{separator}刷新令牌
+                            Recommended format: email{separator}password{separator}clientId{separator}refreshToken
                         </Text>
                     </div>
                     <Input
-                        addonBefore="分隔符"
+                        addonBefore="Separator"
                         value={separator}
                         onChange={(e) => setSeparator(e.target.value)}
                         style={{ width: 200 }}
@@ -481,26 +481,26 @@ const EmailsPage: React.FC = () => {
                             reader.onload = (e) => {
                                 const fileContent = e.target?.result as string;
                                 if (fileContent) {
-                                    // 处理特殊格式：email----id----uuid----info----token
-                                    // 目标格式：email----id----token
+                                    // Handle special format: email----id----uuid----info----token
+                                    // Target format: email----id----token
                                     const lines = fileContent.split(/\r?\n/).filter(line => line.trim());
                                     const processedLines = lines.map(line => {
                                         const parts = line.split(separator);
-                                        // 如果是 5 部分的格式 (例如: email----id----uuid----info----token)
+                                        // If 5 parts format (e.g.: email----id----uuid----info----token)
                                         if (parts.length >= 5) {
-                                            // 提取第1部分(email), 第2部分(clientId), 第5部分(refreshToken)
-                                            // 注意：原文件格式看起来是：email----clientId----uuid----machineInfo----refreshToken
+                                            // Extract part 1 (email), part 2 (clientId), part 5 (refreshToken)
+                                            // Note: Original file format looks like: email----clientId----uuid----machineInfo----refreshToken
                                             return `${parts[0]}${separator}${parts[1]}${separator}${parts[4]}`;
                                         }
-                                        return line; // 保持原样
+                                        return line; // Keep as is
                                     });
 
                                     setImportContent(processedLines.join('\n'));
-                                    message.success(`文件读取成功，已解析 ${lines.length} 行数据`);
+                                    message.success(`File read successfully, parsed ${lines.length} lines`);
                                 }
                             };
                             reader.readAsText(file);
-                            return false; // 阻止自动上传
+                            return false; // Prevent auto upload
                         }}
                         showUploadList={false}
                         maxCount={1}
@@ -509,8 +509,8 @@ const EmailsPage: React.FC = () => {
                         <p className="ant-upload-drag-icon">
                             <InboxOutlined />
                         </p>
-                        <p className="ant-upload-text">点击或拖拽文件到此区域</p>
-                        <p className="ant-upload-hint">支持 .txt 或 .csv 文件</p>
+                        <p className="ant-upload-text">Click or drag file to this area</p>
+                        <p className="ant-upload-hint">Supports .txt or .csv files</p>
                     </Dragger>
                     <TextArea
                         rows={12}
@@ -522,7 +522,7 @@ const EmailsPage: React.FC = () => {
             </Modal>
 
             <Modal
-                title={`${currentEmail} 的${currentMailbox === 'INBOX' ? '收件箱' : '垃圾箱'}`}
+                title={`${currentEmail} ${currentMailbox === 'INBOX' ? 'Inbox' : 'Junk'}`}
                 open={mailModalVisible}
                 onCancel={() => setMailModalVisible(false)}
                 footer={null}
@@ -531,16 +531,16 @@ const EmailsPage: React.FC = () => {
             >
                 <Space style={{ marginBottom: 16 }}>
                     <Button type="primary" onClick={handleRefreshMails} loading={mailLoading}>
-                        收取新邮件
+                        Fetch New Emails
                     </Button>
                     <Popconfirm
-                        title={`确定要清空${currentMailbox === 'INBOX' ? '收件箱' : '垃圾箱'}的所有邮件吗？`}
+                        title={`Are you sure you want to clear all emails in ${currentMailbox === 'INBOX' ? 'Inbox' : 'Junk'}?`}
                         onConfirm={handleClearMailbox}
                     >
-                        <Button danger>清空</Button>
+                        <Button danger>Clear</Button>
                     </Popconfirm>
                     <span style={{ marginLeft: 16, color: '#888' }}>
-                        共 {mailList.length} 封邮件
+                        Total {mailList.length} emails
                     </span>
                 </Space>
                 <List
@@ -551,7 +551,7 @@ const EmailsPage: React.FC = () => {
                         pageSize: 10,
                         showSizeChanger: true,
                         showQuickJumper: true,
-                        showTotal: (total) => `共 ${total} 条`,
+                        showTotal: (total) => `Total ${total} items`,
                         style: { marginTop: 16 },
                     }}
                     style={{ maxHeight: 450, overflow: 'auto' }}
@@ -564,19 +564,19 @@ const EmailsPage: React.FC = () => {
                                     size="small"
                                     onClick={() => handleViewEmailDetail(item)}
                                 >
-                                    查看
+                                    View
                                 </Button>
                             ]}
                         >
                             <List.Item.Meta
                                 title={
                                     <Typography.Text ellipsis style={{ maxWidth: 600 }}>
-                                        {item.subject || '(无主题)'}
+                                        {item.subject || '(No Subject)'}
                                     </Typography.Text>
                                 }
                                 description={
                                     <Space size="large">
-                                        <span style={{ color: '#1890ff' }}>{item.from || '未知发件人'}</span>
+                                        <span style={{ color: '#1890ff' }}>{item.from || 'Unknown Sender'}</span>
                                         <span style={{ color: '#999' }}>
                                             {item.date ? dayjs(item.date).format('YYYY-MM-DD HH:mm') : '-'}
                                         </span>
