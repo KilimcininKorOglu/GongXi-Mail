@@ -47,7 +47,7 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - redis_data:/data
+      - ./docker-data/redis:/data
     command: redis-server --appendonly yes
 
   postgres:
@@ -68,12 +68,8 @@ services:
       retries: 10
       start_period: 30s
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./docker-data/postgres:/var/lib/postgresql/data
 
 networks:
   app-network:
     driver: bridge
-
-volumes:
-  redis_data:
-  postgres_data:

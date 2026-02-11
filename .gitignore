@@ -33,6 +33,9 @@ coverage/
 server/prisma/*.db
 server/prisma/*.db-journal
 
+# Docker data
+docker-data/
+
 # AI agent files
 CLAUDE.md
 AGENTS.md
@@ -40,3 +43,4 @@ GEMINI.md
 SKILL.md
 BUG-REPORT.md
 .cursorrules
+docker-config/
