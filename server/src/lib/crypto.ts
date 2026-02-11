@@ -15,7 +15,7 @@ function getEncryptionKey(): Buffer {
 }
 
 /**
- * AES-256-GCM 加密
+ * AES-256-GCM Encryption
  */
 export function encrypt(text: string): string {
     const iv = randomBytes(IV_LENGTH);
@@ -32,7 +32,7 @@ export function encrypt(text: string): string {
 }
 
 /**
- * AES-256-GCM 解密
+ * AES-256-GCM Decryption
  */
 export function decrypt(encryptedText: string): string {
     const parts = encryptedText.split(':');

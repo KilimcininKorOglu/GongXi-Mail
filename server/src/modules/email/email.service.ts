@@ -146,7 +146,7 @@ export const emailService = {
 
         const updateData: any = { ...input };
 
-        // 加密 sensitive data
+        // Encrypt sensitive data
         if (input.refreshToken) {
             updateData.refreshToken = encrypt(input.refreshToken);
         }

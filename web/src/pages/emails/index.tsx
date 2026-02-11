@@ -588,7 +588,7 @@ const EmailsPage: React.FC = () => {
                 />
             </Modal>
 
-            {/* 邮件详情弹窗 */}
+            {/* Email details modal */}
             <Modal
                 title={emailDetailSubject}
                 open={emailDetailVisible}

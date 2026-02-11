@@ -125,7 +125,7 @@ const DashboardPage: React.FC = () => {
         },
     ];
 
-    // 图表配置
+    // Chart configuration
     const lineConfig = {
         data: apiTrend,
         xField: 'date',
